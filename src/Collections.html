@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Concurrent Collections</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f2f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            padding: 18px 12px;
+            font-size: 16px;
+        }
+        .card {
+            max-width: 1100px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.05);
+            padding: 18px 14px 22px 14px;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 620;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 20px;
+            padding: 0 4px;
+            color: #111;
+        }
+        .badge-cat {
+            font-size: 0.8rem;
+            background: #eef2ff;
+            padding: 2px 10px;
+            border-radius: 20px;
+            color: #2c3e66;
+        }
+        .section-header {
+            background: #f8fafd;
+            font-weight: 700;
+            font-size: 1.1rem;
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+            text-align: left;
+            color: #1e2a44;
+            border-top: 1.5px solid #e4e9f2;
+            border-bottom: 1.5px solid #e4e9f2;
+        }
+        .section-header td {
+            background: #f8fafd;
+            padding: 10px 12px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .impl-wrapper {
+            background: #eef1ff;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            font-weight: normal;
+            font-family: monospace;
+            margin-left: 10px;
+            color: #2c5f8a;
+            display: inline-block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            overflow: hidden;
+            table-layout: fixed;
+        }
+        th {
+            background: #f8fafd;
+            color: #1e2a44;
+            font-weight: 600;
+            padding: 8px 6px;
+            border-bottom: 1.5px solid #e4e9f2;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #eceff5;
+            background: white;
+            vertical-align: top;
+            font-size: 0.9rem;
+        }
+        .col-name {
+            font-weight: 620;
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            background: #fff7e6;
+            text-align: left;
+        }
+        .struct-descr {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        .struct-descr .analogy {
+            font-size: 0.8rem;
+            color: #5b6e8c;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        /* общие теги */
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 24px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 6px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+       .tag-lock { background: #dbeafe; color: #1e40af; }            
+        .tag-twolocks { background: #bfdbfe; color: #1e3a8a; }        
+        .tag-cas { background: #bae6fd; color: #0369a1; }             
+        .tag-cow { background: #f3e8ff; color: #7c3aed; }             
+        .tag-sorted { background: #c7d2fe; color: #3730a3; }          
+        .tag-bounded { background: #fef9c3; color: #a16207; }         
+        .tag-vol  { background: #ffe4e6; color: #be123c; }       
+       .progress-blocking,
+        .progress-lockfree,
+        .progress-waitfree {
+            display: block;
+            text-align: center;
+            margin-bottom: 8px;
+            width: 100%;
+            border-radius: 24px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            box-sizing: border-box;
+        }
+        .progress-blocking {
+            background: #cbd5e1;
+            color: #1e293b;
+        }
+        .progress-lockfree {
+            background: #bbf7d0;
+            color: #166534;
+           
+        }
+        .progress-waitfree {
+            background: #fbcfe8;
+            color: #9d174d;
+        }
+
+        .high-conc {
+            background: #e0f2e9;
+            color: #0a5e44;
+        }
+        .weak {
+            background: #fff0d9;
+            color: #b45309;
+        }
+        .snapshot {
+            background: #f1f5f9;
+            color: #2d3a4b;
+        }
+
+        .tag-multi {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        .text-feature {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #2d3a4b;
+        }
+        .notes {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .note-card {
+            background: #eef2ff;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .note-card strong {
+            color: #0369a1;
+        }
+        @media (max-width: 700px) {
+            body { font-size: 14px; }
+            .card { padding: 12px 8px; }
+            .tag { white-space: normal; font-size: 0.7rem; padding: 2px 5px; }
+            .note-card { font-size: 0.75rem; }
+            .struct-descr { font-size: 0.75rem; }
+            .struct-descr .analogy { font-size: 0.7rem; }
+            .text-feature { font-size: 0.75rem; }
+        }
+        @media (max-width: 650px) {
+            td, th { padding: 5px 2px; }
+            .col-name { font-size: 0.8rem; }
+            .impl-wrapper { font-size: 0.7rem; }
+        }
+        .progress-table {
+        width: 100%;
+        margin-top: 12px;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        font-size: 0.8rem;
+    }
+
+    .progress-table th {
+        background: #e2e8f0;
+        padding: 8px 6px;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .progress-table td {
+        padding: 8px 6px;
+        vertical-align: top;
+    }
+
+    .progress-table tr:not(:first-child) td {
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .progress-table code {
+        background: #f1f5f9;
+        padding: 2px 4px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+    }
+    </style>
+</head>
+<body>
+<div class="card">
+<h2>
+    <span style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+        Java Concurrent Collections
+        <span class="tag high-conc">high concurrency</span>
+    </span>
+    <span class="badge-cat">java.util.concurrent</span>
+</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 26%">Коллекция</th>
+                <th style="width: 22%">Структура данных</th>
+                <th style="width: 26%">Синхронизация</th>
+                <th style="width: 26%">Свойства</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <!-- MAP -->
+            <tr class="section-header">
+                <td colspan="4">
+                    <strong>🗺️ Map</strong>
+                    <span class="impl-wrapper">impl ConcurrentMap / ConcurrentNavigableMap</span>
+                </td>
+            <tr>
+                <td class="col-name">ConcurrentHashMap</span></td>
+                <td class="struct-descr">
+                    Node&lt;K,V&gt;[] table (buckets)
+                    <div class="analogy">📘 как в HashMap</div>
+                </td>
+                <td>
+                    <div class="tag progress-blocking">Blocking</div>
+<span class="tag tag-lock">lock‑stripping на бакеты</span> <span class="tag tag-cas">CAS</span></td>
+                <td>
+                    <div class="tag-multi">
+                        <span class="tag weak">weakly consistent</span>
+                    </div>
+                    <div class="text-feature">Замена Hashtable</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-name">ConcurrentSkipListMap</span></td>
+                <td class="struct-descr">
+                    Skip list из нод <br> (головные узлы, башни)
+                </td>
+                <td>
+                    <div class="tag progress-lockfree">Lock‑free</div>
+                     <span class="tag tag-cas">CAS</span></td>
+                <td>
+                    <div class="tag-multi">
+                        <span class="tag weak">weakly consistent</span>
+                        <span class="tag tag-sorted">sorted</span>
+
+                    </div>
+                </td>
+            </tr>
+
+            <!-- SET -->
+            <tr class="section-header"><td colspan="4"><strong>🧩 Set</strong> <span class="impl-wrapper">impl NavigableSet / Set</span></td></tr>
+            <tr>
+                <td class="col-name">ConcurrentSkipListSet</span></td>
+                <td class="struct-descr">ConcurrentSkipListMap</td>
+                <td> <div class="tag progress-lockfree">Lock‑free</div> <span class="tag tag-cas">CAS</span></td>
+                <td>
+                    <div class="tag-multi">
+                        <span class="tag weak">weakly consistent</span>
+                        <span class="tag tag-sorted">sorted</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-name">CopyOnWriteArraySet</span></td>
+                <td class="struct-descr">CopyOnWriteArrayList</td>
+                <td>    <div class="tag progress-blocking">Blocking (writes)</div>
+                <span class="tag tag-cow">copy on write</span> 
+                <td>
+                    <div class="tag-multi">
+                        <span class="tag high-conc">only reads high concurrency</span>
+                        <span class="tag snapshot">snapshot iterator</span>
+                    </div>
+                    <div class="text-feature">Хорош для маленьких наборов</div>
+                </td>
+            </tr>
+
+            <!-- LIST -->
+            <tr class="section-header"><td colspan="4"><strong>📋 List</strong> <span class="impl-wrapper">impl List</span></td></tr>
+            <tr>
+                <td class="col-name">CopyOnWriteArrayList</span></td>
+                <td class="struct-descr">
+                    Object[] array
+                    <div class="analogy">📘 как в ArrayList</div>
+                </td>
+                <td><div class="tag progress-blocking">Blocking (writes)</div>
+                    <span class="tag tag-cow">copy on write</span></span></td>
+                <td>
+                    <div class="tag-multi">
+                        <span class="tag high-conc">only reads high concurrency</span>
+                        <span class="tag snapshot">snapshot iterator</span>
+                    </div>
+                    <div class="text-feature">Хорош для маленьких наборов</div>
+                </td>
+            </tr>
+
+            <tr class="section-header"><td colspan="4"><strong>⏳ Queue / Deque (non‑blocking)</strong> <span class="impl-wrapper">impl Queue / Deque</span></td>
+            <tr>
+                <td class="col-name">ConcurrentLinkedQueue</span></td>
+                <td class="struct-descr">
+                    Linked nodes (Michael‑Scott queue)
+                    <div class="analogy">📘 как в LinkedList (FIFO)</div>
+                </td>
+                <td><div class="tag progress-lockfree">Lock‑free</div> <span class="tag tag-cas">CAS (M&S algorithm)</span></span></td>
+                <td>
+                    <div class="tag-multi">
+                        <span class="tag weak">weakly consistent</span>
+                        <span class="tag tag-bounded">unbounded</span>
+                    </div>
+                    <div class="text-feature">Высокая пропускная способность</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-name">ConcurrentLinkedDeque</span></td>
+                <td class="struct-descr">
+                    Linked nodes (double‑ended)
+                    <div class="analogy">📘 как в LinkedList (LIFO и FIFO)</div>
+                </td>
+                <td><div class="tag progress-lockfree">Lock‑free</div> <span class="tag tag-cas">CAS</span></span></td>
+                <td>
+                    <div class="tag-multi">
+                        <span class="tag weak">weakly consistent</span>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- BLOCKING QUEUES -->
+            <tr class="section-header"><td colspan="4"><strong>🔒 BlockingQueue (producer‑consumer)</strong> <span class="impl-wrapper">impl BlockingQueue</span></td></tr>
+            <tr>
+                <td class="col-name">ArrayBlockingQueue</span></td>
+                <td class="struct-descr">
+                    Circular array (fixed capacity)
+                    <div class="analogy">📘 как в ArrayDeque, но с ограничением размера</div>
+                </td>
+                <td><div class="tag progress-blocking">Blocking</div>
+                    <span class="tag tag-lock">ReentrantLock</span>+ Condition</span></td>
+                <td>
+                    <div class="tag-multi">
+                        <span class="tag weak">weakly consistent</span>
+                        <span class="tag tag-bounded">bounded</span>
+                        <span class="tag tag-lock">fairness (no starvation)</span>
+                    </div>
+                    <div class="text-feature">Подходит для небольших данных, где важно предсказуемое время работы. Часто используется в пулах потоков</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-name">LinkedBlockingQueue</span></td>
+                <td class="struct-descr">
+                    Linked nodes (optionally bounded)
+                    <div class="analogy">📘 как в LinkedList</div>
+                </td>
+                <td><div class="tag progress-blocking">Blocking</div>
+                    <span class="tag tag-twolocks">Two ReentrantLocks</span>(takeLock/putLock) + Condition</span></td>
+                <td>
+                    <div class="tag-multi">
+                        <span class="tag weak">weakly consistent</span>
+                        <span class="tag tag-bounded">optionally‑bounded</span>
+                    </div>
+                    <div class="text-feature">По умолчанию неограниченная. Производительней ArrayBlockingQueue. Часто используется в пулах потоков</div>
+                </td>
+            </td>
+            <tr>
+                <td class="col-name">PriorityBlockingQueue</span></td>
+                <td class="struct-descr">
+                    Object[] queue (binary heap)
+                    <div class="analogy">📘 как в PriorityQueue</div>
+                </td>
+                <td>
+                    <div class="tag progress-blocking">Blocking</div>
+                    <span class="tag tag-lock">ReentrantLock</span>+ <span class="tag tag-cas">CAS</span>для увеличения ёмкости массива (ожидающие — yield() в цикле)</span></td>
+                <td>
+                    <div class="tag-multi">
+                        <span class="tag weak">weakly consistent</span>
+                        <span class="tag tag-sorted">priority (sorted)</span>
+                        <span class="tag tag-bounded">unbounded</span>
+                    </div>
+                    <div class="text-feature">Итерация без гарантий порядка и актуальности</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-name">SynchronousQueue</span> <div class="text-feature"  style="font-weight: normal">Rendezvous (встреча) потоков. 
+                Потоки находятся в состоянии ожидания (LockSupport.park()) и каждый держит объект для передачи</div>
+                </td>
+                <td class="struct-descr">
+                    TransferQueue/TransferStack. Хранят waiter (поток) и item (объект).
+                    <div class="analogy">🎯 нет аналога — передача объекта «из рук в руки» между встретившимися потоками</div>
+                </td>
+                <td>
+                    <div class="tag progress-waitfree">Wait‑free</div>
+                    <span class="tag tag-cas">CAS</span>
+                </td>
+                <td>
+                    <div class="tag-multi">
+                    <div class="text-feature">Каждый put ждёт take. Часто используется в пулах потоков (e.g., CachedThreadPool)</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="notes">
+        <div class="note-card">
+            <span class="tag tag-cas">CAS (Compare-And-Swap)</span>атомарная процессорная операция, которая проверяет, совпадает ли текущее значение в памяти с ожидаемым, и если да, то заменяет его на новое. Другие потоки не будут заблокированы (что было бы дорого), а будут пытаться, пока не получится. Дешевая (но не бесплатная).
+        </div>
+        <div class="note-card">
+            <span class="tag tag-lock">Lock‑stripping</span>блокировка части коллекции (бакетов/узлов).
+        </div>
+        <div class="note-card">
+            <span class="tag weak">Weakly consistent</span>итераторы не бросают ConcurrentModificationException, а отражают состояние на момент обхода с возможными параллельными изменениями.
+        </div>
+        <div class="note-card">
+            <span class="tag tag-cow">Copy on write</span>запись: 1) блокировка 2) копирование массива 3) изменение копии 4) установка ссылки на новый массив 5) разблокировка. Читатели не блокируются. Они видят либо старый массив, либо новый целиком, но никогда не промежуточное состояние. Записывать в 1 момент может только кто-то один.
+        </div>
+        <div class="note-card">
+            <span class="tag snapshot"> Snapshot iterator</span>итератор работает с копией коллекции (создается для каждого итератора). Поэтому не  вызывает ConcurrentModificationException.
+        </div>
+        <div class="note-card">
+            <strong>Progress Guarantees в многопоточном программировании</strong>
+            <table class="progress-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;"></th>
+                        <th style="width: 15%;">Имя</th>
+                        <th style="width: 23%;">Проблема</th>
+                        <th style="width: 31%;">Гарантия</th>
+                        <th style="width: 21%;">Типичная реализация в JDK</th>
+                    </tr>
+                </thead>
+                <tbody style="vertical-align: middle; text-align: left;">
+                    <tr>
+                        <td style="text-align: center;"> </td>
+                        <td style="text-align: center;"><div class="tag progress-blocking">Blocking</div></td>
+                        <td>Блокировка при зависании держателя, Deadlock, Livelock, Starvation</td>
+                        <td>Никаких</td>
+                        <td>Мониторы (<code>synchronized</code>, <code>ReentrantLock</code>)</td>
+                    </tr>
+                    <tr style="background: #f8fafc;">
+                        <td style="text-align: center; vertical-align: middle; background-color: #eff6ff; border-left: 4px solid #3b82f6;" rowspan="3">Non‑blocking</td>
+                        <td style="text-align: center;">Obstruction‑Free</td>
+                        <td>Livelock</td>
+                        <td>Любой поток гарантированно завершит свою операцию за конечное число шагов, если он останется один (остальные приостановлены)</td>
+                        <td>Почти нет в JDK</td>
+                    </tr>
+                    <tr style="background: #f8fafc;">
+                        <td style="text-align: center;"><div class="tag progress-lockfree">Lock‑free</div></td>
+                        <td>Starvation</td>
+                        <td>Хотя бы один поток в системе продвигается</td>
+                        <td>CAS</td>
+                    </tr>
+                    <tr style="background: #f8fafc;">
+                        <td style="text-align: center;"><div class="tag progress-waitfree">Wait‑free</div></td>
+                        <td>Никаких</td>
+                        <td>Каждый поток завершит операцию за конечное число шагов</td>
+                        <td>Сложная. Потоки могут помогать друг другу. Пример: <code>SynchronousQueue</code></td>
+                    </tr>
+                </tbody>
+            </table>
+            Как это соотносится с нашими коллекциями? Гарантия, указанная для коллекции в блоке «Синхронизация», будет осуществима, если все потоки из всех многопоточных сущностей будут работать только с этой коллекцией.
+        </div>
+    </div>
+</div>
+</body>
+</html>

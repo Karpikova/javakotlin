@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  website:
+    image: nginx:alpine                     # Берем готовый образ
+    container_name: javakotlin
+    ports:
+      - "80:80"                             # Открываем порт для внешнего мира
+    volumes:
+      - ./:/usr/share/nginx/html:ro         # Монтируем текущую папку (данные из моей папки внутри кнтейнера будут видны вот так. Там их ждет nginx)
+    restart: unless-stopped
