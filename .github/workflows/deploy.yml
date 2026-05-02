@@ -2,16 +2,13 @@ name: Deploy to VPS
 
 on:
   push:
-    branches: [ main, master ]
-  workflow_dispatch:   # чтобы можно было запустить вручную
+    branches: [ master ]   # или main, смотрите как называется ваша ветка
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -19,6 +16,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
+            # Если папки с проектом нет — клонируем репозиторий
+            if [ ! -d /root/javakotlin ]; then
+              git clone https://github.com/Karpikova/javakotlin.git /root/javakotlin
+            fi
             cd /root/javakotlin
             git pull
             docker compose up -d --force-recreate
