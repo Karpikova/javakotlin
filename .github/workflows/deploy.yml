@@ -19,6 +19,6 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
-            cd /root/my-site
+            cd /root/javakotlin
             git pull
             docker compose up -d --force-recreate
