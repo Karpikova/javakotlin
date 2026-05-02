@@ -22,4 +22,5 @@ jobs:
             fi
             cd /root/javakotlin
             git pull
+            docker compose down
             docker compose up -d --force-recreate
