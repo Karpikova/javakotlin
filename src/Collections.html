@@ -1,4 +1,6 @@
-
+<!DOCTYPE html>
+<html>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Concurrent Collections</title>
@@ -242,6 +244,48 @@
         border-radius: 6px;
         font-size: 0.75rem;
     }
+            /* стили футера */
+        .card-footer {
+            margin-top: 2rem;
+            padding: 1.5rem 0.5rem 0.5rem;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .footer-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e2a44;
+            margin-bottom: 0.5rem;
+        }
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 0.5rem 0 0.8rem;
+        }
+        .footer-links a {
+            color: #4a5b7a;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .footer-links a:hover {
+            color: #2c3e66;
+            text-decoration: underline;
+        }
+        .footer-copyright {
+            font-size: 0.7rem;
+            color: #7c8aa5;
+            border-top: 1px solid #ecf3f9;
+            padding-top: 0.8rem;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -512,5 +556,15 @@
             </table>
             Как это соотносится с нашими коллекциями? Гарантия, указанная для коллекции в блоке «Синхронизация», будет осуществима, если все потоки из всех многопоточных сущностей будут работать только с этой коллекцией.
         </div>
+            
+            <div class="card-footer">
+        <div class="footer-name">Maria Karpikova / Pomazkina</div>
+        <div class="footer-links">
+            <a href="mailto:makarpikova@gmail.com">📧 makarpikova@gmail.com</a>
+            <a href="https://www.linkedin.com/in/maria-pomazkina-7972a2a3" target="_blank" rel="noopener">🔗 LinkedIn</a>
+        </div>
+    </div>
     </div>
 </div>
+</body>
+</html>
