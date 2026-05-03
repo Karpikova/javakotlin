@@ -21,6 +21,7 @@ jobs:
               git clone https://github.com/Karpikova/javakotlin.git /root/javakotlin
             fi
             cd /root/javakotlin
+            git stash
             git pull
             docker compose down
             docker compose up -d --force-recreate
