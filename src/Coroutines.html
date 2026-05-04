@@ -159,20 +159,23 @@
             gap: 12px;
         }
         .note-card {
-            margin-top: 24px;
-            background: #eef2ff;
-            padding: 10px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #1e2a44;
-        }
+        margin-top: 12px;
+        background: #f8fafd;
+        border-radius: 16px;
+        padding: 16px 20px;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+        font-size: 0.8rem;
+        line-height: 1.5;
+        color: #1e2a44;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
 
         .note-card strong {
             font-weight: 600;
-            color: #0369a1;
+            color: #0f172a;
         }
 
-        th:nth-child(1) { width: 20%; }
+        th:nth-child(1) { width: 21%; }
         th:nth-child(2) { width: 13%; }
         th:nth-child(3) { width: 9%; }
         th:nth-child(4) { width: 9%; }
@@ -368,7 +371,9 @@
         </thead>
         <tbody>
             <tr>
-                <td class="method">val my = CoroutineScope()</td>
+                <td class="method">val my = CoroutineScope() <br>
+                | CoroutineScope(Job()) <br>
+                | CoroutineScope(SupervisorJob())</td>
                 <td><span class="dash">itself</span></td>
                 <td><span class="no">✗ No</span></td>
                 <td><span class="no">✗ No</span></td>
@@ -386,6 +391,9 @@
         Срабатывает только когда исключение достигло корневой корутины (Root Job) и не было обработано. 
         Дочерние корутины делегируют исключения наверх — их CEH игнорируется.
         Имеются исключения из этого правила, отмечены в таблице.
+    </div>
+        <div class="note-card">
+        <strong>SupervisorJob</strong> задает правило для своих дочерних корутин (потомков всех уровней): падение с исключением любой из них изолировано, оно не отменяет всех остальных корутин.
     </div>
     <div class="card-footer">
         <div class="footer-name">Maria Karpikova / Pomazkina</div>
