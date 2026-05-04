@@ -152,6 +152,25 @@
             align-items: center;
             gap: 4px;
         }
+        .notes {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .note-card {
+            margin-top: 24px;
+            background: #eef2ff;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #1e2a44;
+        }
+
+        .note-card strong {
+            font-weight: 600;
+            color: #0369a1;
+        }
 
         th:nth-child(1) { width: 20%; }
         th:nth-child(2) { width: 13%; }
@@ -225,7 +244,7 @@
         Kotlin Coroutines
         <span class="badge-cat">builders & scope</span>
     </h2>
-
+    <h2 style="font-size: 1rem; margin: 8px 0 6px 0;">🧩 Builders</h2>
     <table>
         <thead>
             <tr>
@@ -247,7 +266,7 @@
                 <td><span class="yes">✓ Yes</span></td>
                 <td class="root-cell">
                     <span class="yes">✓ Yes</span>
-                    <span class="root-note">altho CEH won't catch</span>
+                    <span class="root-note">CEH doesn't work</span>
                 </td>
                 <td><span class="yes">✓ Yes</span></td>
                 <td><span class="yes">✓ Yes</span></td>
@@ -280,8 +299,8 @@
                 <td><span class="yes">✓ Yes</span></td>
                 <td class="root-cell">
                     <span class="no">✗ No</span>
-                    <span class="root-note">CEH will catch <br> for children</span>
-                </td>SupervisorJob
+                    <span class="root-note">CEH works<br> for children</span>
+                </td>
                 <td>
                     <span class="yes">✓ Yes</span>
                     <span class="root-note">SupervisorJob</span>
@@ -362,6 +381,12 @@
             </tr>
         </tbody>
     </table>
+    <div class="note-card">
+        <strong>CEH (CoroutineExceptionHandler)</strong> — механизм «последней надежды». 
+        Срабатывает только когда исключение достигло корневой корутины (Root Job) и не было обработано. 
+        Дочерние корутины делегируют исключения наверх — их CEH игнорируется.
+        Имеются исключения из этого правила, отмечены в таблице.
+    </div>
     <div class="card-footer">
         <div class="footer-name">Maria Karpikova / Pomazkina</div>
         <div class="footer-links">
