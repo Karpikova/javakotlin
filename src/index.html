@@ -3,10 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Concurrency Hub</title>
-    <meta name="description" content="Справочник по Kotlin Coroutines и Java Concurrent Collections: таблицы, свойства, гарантии прогресса, CAS, lock-free.">
-    <meta name="keywords" content="Kotlin, Coroutines, Java, Concurrent Collections, многопоточность, CAS, lock-free">
+    <title>Concurrency Hub · Шпаргалки по многопоточности</title>
+    
+    <!-- SEO & мета-теги -->
+    <meta name="description" content="Справочник по Kotlin Coroutines и Java Concurrent Collections: таблицы, свойства, гарантии прогресса, CAS, lock-free. Для разработчиков и архитекторов.">
+    <meta name="keywords" content="Kotlin, Coroutines, Java, Concurrent Collections, многопоточность, CAS, lock-free, ConcurrentHashMap, runBlocking, structured concurrency">
     <meta name="author" content="Maria Pomazkina">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph (для соцсетей и превью ссылок) -->
+    <meta property="og:title" content="Concurrency Hub · Шпаргалки по многопоточности">
+    <meta property="og:description" content="Технический справочник по Kotlin Coroutines и Java Concurrent Collections для разработчиков.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://javakotlin.ru">
+    <!-- <meta property="og:image" content="https://javakotlin.ru/preview.jpg"> → раскомментируй, если добавишь картинку -->
+    
+    <!-- Canonical URL (чтобы поисковики не путали www и без www) -->
+    <link rel="canonical" href="https://javakotlin.ru">
+    
+    <!-- Структурированные данные (JSON‑LD) для поисковых роботов -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Kotlin Coroutines и Java Concurrent Collections — шпаргалка",
+      "description": "Сравнительные таблицы билдеров корутин и потокобезопасных коллекций, гарантии прогресса, CAS, lock‑free, structured concurrency.",
+      "author": {
+        "@type": "Person",
+        "name": "Maria Pomazkina",
+        "email": "makarpikova@gmail.com",
+        "sameAs": "https://www.linkedin.com/in/maria-pomazkina-7972a2a3"
+      },
+      "keywords": "Kotlin Coroutines, Java Concurrent Collections, CAS, lock‑free, structured concurrency",
+      "inLanguage": "ru-RU"
+    }
+    </script>
+    
     <style>
         * {
             margin: 0;
