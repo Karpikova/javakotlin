@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   website:
     image: nginx:alpine
@@ -10,19 +8,14 @@ services:
     volumes:
       - ./src:/usr/share/nginx/html:ro
       - ./nginx-conf:/etc/nginx/conf.d:ro
-      - certbot_ssl:/etc/letsencrypt:ro   # [citation:6] Монтируем том с сертификатами только для чтения
+      - ./data/letsencrypt:/etc/letsencrypt:ro   # путь к сертификатам тот же
     restart: unless-stopped
 
   certbot:
     image: certbot/certbot
     container_name: javakotlin_certbot
     volumes:
-      - ./src:/var/www/html
-      - certbot_ssl:/etc/letsencrypt      # [citation:1][citation:8] Том для записи сертификатов (чтение и запись)
+      - ./src:/var/www/html:ro
+      - ./data/letsencrypt:/etc/letsencrypt   # тот же путь, но без :ro, чтобы записывать
     entrypoint: /bin/sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/html --post-hook 'nginx -s reload'; sleep 12h & wait $${!}; done"
     restart: unless-stopped
-    depends_on:
-      - website
-
-volumes:
-  certbot_ssl:   # <-- Этот том [citation:5] будет жить на диске сервера
