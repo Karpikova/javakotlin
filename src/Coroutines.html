@@ -175,7 +175,7 @@
             color: #0f172a;
         }
 
-        th:nth-child(1) { width: 21%; }
+        th:nth-child(1) { width: 23%; }
         th:nth-child(2) { width: 13%; }
         th:nth-child(3) { width: 9%; }
         th:nth-child(4) { width: 9%; }
@@ -263,7 +263,7 @@
         <tbody>
             <!-- runBlocking -->
             <tr>
-                <td class="method">runBlocking() <br>(plug, rarely used)</td>
+                <td class="method">runBlocking { }<br>(plug, rarely used)</td>
                 <td><span class="dash">block result</span></td>
                 <td><span class="yes">✓ Yes</span></td>
                 <td><span class="yes">✓ Yes</span></td>
@@ -276,7 +276,7 @@
             </tr>
             <!-- withContext -->
             <tr>
-                <td class="method">withContext(Dispatcher...)</td>
+                <td class="method">withContext(Dispatcher...) { } <br>| runInterruptible { }</td>
                 <td><span class="dash">block result</span></td>
                 <td><span class="no">✗ No</span></td>
                 <td><span class="yes">✓ Yes</span></td>
@@ -322,7 +322,7 @@
             </tr>
             <!-- launch() / async() -->
             <tr>
-                <td class="method">launch() / async()</td>
+                <td class="method">launch { } / async { }</td>
                 <td><span class="dash">Job/Deffered</span></td>
                 <td><span class="no">✗ No</span></td>
                 <td><span class="no">✗ No</span></td>
@@ -334,7 +334,7 @@
             <tr>
                 <td class="method">
                     <div class="method-flex">
-                        <span>launch(Job()) / async(Job())</span>
+                        <span>launch(Job()) { } / async(Job()) { }</span>
                         <span class="antipattern-line">⚠️ anti-pattern</span>
                         <span class="antipattern-line" style="background:#fff0db;">breaks structured concurrency</span>
                     </div>
