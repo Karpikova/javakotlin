@@ -1,9 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kotlin Coroutines</title>
+    <title>Concurrency Hub · Шпаргалки по многопоточности</title>
+    
+    <!-- SEO & мета-теги -->
+    <meta name="description" content="Справочник по Kotlin Coroutines и Java Concurrent Collections: таблицы, свойства, гарантии прогресса, CAS, lock-free. Для разработчиков и архитекторов.">
+    <meta name="keywords" content="Kotlin, Coroutines, runBlocking, withContext, coroutineScope, supervisorScope, GlobalScope, launch, async, Job, SupervisorJob, CoroutineExceptionHandler, CEH, structured concurrency, root job, new coroutine, builder, scope constructor, Java, Concurrent Collections, java.util.concurrent, ConcurrentHashMap, ConcurrentSkipListMap, ConcurrentSkipListSet, CopyOnWriteArrayList, CopyOnWriteArraySet, ConcurrentLinkedQueue, ConcurrentLinkedDeque, ArrayBlockingQueue, LinkedBlockingQueue, PriorityBlockingQueue, SynchronousQueue, lock‑free, wait‑free, non‑blocking, blocking, CAS, Compare‑And‑Swap, lock‑stripping, copy‑on‑write, weakly consistent, snapshot iterator, fairness, handoff, zero‑capacity, unbounded, bounded, optionally‑bounded, многопоточность, корутины, потокобезопасные коллекции, шпаргалка, справочник, собеседование Java">
+    <meta name="author" content="Maria Pomazkina">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph (для соцсетей и превью ссылок) -->
+    <meta property="og:title" content="Структурированные материалы по многопоточности Java | Kotlin">
+    <meta property="og:description" content="Технический справочник по Kotlin Coroutines и Java Concurrent Collections для разработчиков.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://javakotlin.ru">
+    <meta property="og:image" content="https://javakotlin.ru/preview.png">
+    
+    <link rel="canonical" href="https://javakotlin.ru">
+    
+    <!-- Структурированные данные (JSON‑LD) для поисковых роботов -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Kotlin Coroutines и Java Concurrent Collections — шпаргалка",
+      "description": "Сравнительные таблицы билдеров корутин и потокобезопасных коллекций, гарантии прогресса, CAS, lock‑free, structured concurrency.",
+      "author": {
+        "@type": "Person",
+        "name": "Maria Pomazkina",
+        "email": "makarpikova@gmail.com",
+        "sameAs": "https://www.linkedin.com/in/maria-pomazkina-7972a2a3"
+      },
+      "keywords": "Kotlin Coroutines, Java Concurrent Collections, CAS, lock‑free, structured concurrency",
+      "inLanguage": "ru-RU"
+    }
+    </script>
+    
     <style>
         * {
             margin: 0;
@@ -12,396 +46,157 @@
         }
         body {
             background: #f2f4f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
             padding: 18px 12px;
         }
-        .card {
-            max-width: 750px;
-            width: 100%;
-            background: #ffffff;
-            border-radius: 28px;
-            box-shadow: 0 12px 28px rgba(0,0,0,0.05);
-            padding: 18px 12px 20px 12px;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        h2 {
-            font-size: 1.25rem;
-            font-weight: 620;
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 16px;
-            padding: 0 4px;
-            color: #111;
+        .hero {
+            text-align: center;
+            padding: 2rem 1rem;
         }
-        .badge-cat {
-            font-size: 0.6rem;
-            background: #eef2ff;
-            padding: 2px 10px;
-            border-radius: 20px;
-            color: #2c3e66;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.66rem;
-            border-radius: 20px;
-            overflow: hidden;
-            table-layout: fixed;
-        }
-
-        th {
-            background: #f8fafd;
+        .hero h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
             color: #1e2a44;
-            font-weight: 600;
-            padding: 8px 3px;
-            border-bottom: 1.5px solid #e4e9f2;
-            text-align: center;
-            font-size: 0.64rem;
         }
-
-        td {
-            padding: 6px 3px;
-            text-align: center;
-            border-bottom: 1px solid #eceff5;
-            background: white;
-            vertical-align: top;
+        .hero p {
+            font-size: 1.2rem;
+            color: #4a5568;
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
         }
-
-        .method {
-            text-align: left;
-            font-weight: 620;
-            font-family: 'SF Mono', 'JetBrains Mono', monospace;
-            font-size: 0.62rem;
-            background: #fff7e6;
-            color: #0f172a;
-            letter-spacing: -0.1px;
-            vertical-align: middle;
-        }
-
-        .method-flex {
+        .cards {
             display: flex;
-            flex-direction: column;
-            gap: 4px;
+            gap: 2rem;
             justify-content: center;
+            flex-wrap: wrap;
+            margin: 2rem 0;
         }
-
-        .yes {
-            background: #e0f2e9;
-            color: #0a5e44;
+        .card-link {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 2rem 1.5rem;
+            width: 300px;
+            text-align: center;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border: 1px solid #eef2ff;
+        }
+        .card-link:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 36px rgba(0,0,0,0.08);
+            border-color: #d9e2ef;
+        }
+        .card-link h3 {
+            font-size: 1.5rem;
+            margin: 1rem 0 0.75rem;
             font-weight: 600;
-            padding: 2px 7px;
-            border-radius: 34px;
-            display: inline-block;
-            font-size: 0.64rem;
+        }
+        .card-link p {
+            color: #5b6e8c;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .emoji-big {
+            font-size: 3.5rem;
         }
 
-        .no {
-            background: #ffe7e3;
-            color: #b13b2a;
-            padding: 2px 7px;
-            border-radius: 34px;
-            display: inline-block;
-            font-size: 0.64rem;
-            font-weight: 500;
-        }
-
-        .dash {
-            background: #f1f3f9;
-            color: #5b6b8c;
-            padding: 2px 7px;
-            border-radius: 34px;
-            display: inline-block;
-            font-size: 0.64rem;
-        }
-
-        .root-note {
-            font-size: 0.55rem;
-            background: #eef1ff;
-            padding: 2px 6px;
-            border-radius: 30px;
-            display: inline-block;
-            margin-top: 4px;
-            color: #2c3e66;
-        }
-
-        .antipattern-line {
-            background: #fef0d9;
-            color: #b45309;
-            font-size: 0.55rem;
-            font-weight: 600;
-            padding: 2px 7px;
-            border-radius: 32px;
-            display: inline-block;
-            width: fit-content;
-        }
-
-        hr {
-            margin: 12px 0;
-            border: none;
-            border-top: 1.5px solid #ecf0f5;
-        }
-
-        .root-cell {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-        .notes {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .note-card {
-        margin-top: 12px;
-        background: #f8fafd;
-        border-radius: 16px;
-        padding: 16px 20px;
-        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-        font-size: 0.8rem;
-        line-height: 1.5;
-        color: #1e2a44;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-    }
-
-        .note-card strong {
-            font-weight: 600;
-            color: #0f172a;
-        }
-
-        th:nth-child(1) { width: 21%; }
-        th:nth-child(2) { width: 13%; }
-        th:nth-child(3) { width: 9%; }
-        th:nth-child(4) { width: 9%; }
-        th:nth-child(5) { width: 12%; }
-        th:nth-child(6) { width: 9%; }
-        th:nth-child(7) { width: 9%; }
-
-        /* стили футера */
-        .card-footer {
-            margin-top: 2rem;
-            padding: 1.5rem 0.5rem 0.5rem;
+        footer {
+            margin-top: 4rem;
+            padding: 2rem 1rem 2rem;
             border-top: 1px solid #e2e8f0;
+            background: #fafcff;
+            border-radius: 24px 24px 0 0;
+        }
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
             text-align: center;
         }
         .footer-name {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: #1e2a44;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.2px;
         }
         .footer-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 2rem;
             justify-content: center;
             flex-wrap: wrap;
-            margin: 0.5rem 0 0.8rem;
+            margin: 1rem 0 1.2rem;
         }
         .footer-links a {
             color: #4a5b7a;
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 500;
             transition: color 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
         .footer-links a:hover {
             color: #2c3e66;
             text-decoration: underline;
         }
         .footer-copyright {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: #7c8aa5;
+            margin-top: 1rem;
             border-top: 1px solid #ecf3f9;
-            padding-top: 0.8rem;
-            margin-top: 0.5rem;
+            padding-top: 1rem;
             display: inline-block;
         }
-
-        @media (max-width: 550px) {
-            .card {
-                padding: 12px 8px;
+        @media (max-width: 640px) {
+            .footer-links {
+                gap: 1.2rem;
             }
-            td, th {
-                padding: 4px 2px;
-                font-size: 0.6rem;
-            }
-            .method {
-                font-size: 0.58rem;
+            .hero h1 {
+                font-size: 1.8rem;
             }
         }
     </style>
 </head>
 <body>
-<div class="card">
-
-    <h2>
-        Kotlin Coroutines
-        <span class="badge-cat">builders & scope</span>
-    </h2>
-    <h2 style="font-size: 1rem; margin: 8px 0 6px 0;">🧩 Builders</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Builder</th>
-                <th>Returns</th>
-                <th>Blocks thread</th>
-                <th>Waits completion</th>
-                <th>Root Job</th>
-                <th>New Job</th>
-                <th>New coroutine</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- runBlocking -->
-            <tr>
-                <td class="method">runBlocking() <br>(plug, rarely used)</td>
-                <td><span class="dash">block result</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td class="root-cell">
-                    <span class="yes">✓ Yes</span>
-                    <span class="root-note">CEH doesn't work</span>
-                </td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-            </tr>
-            <!-- withContext -->
-            <tr>
-                <td class="method">withContext(Dispatcher...)</td>
-                <td><span class="dash">block result</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="no">✗ No</span></td>
-            </tr>
-            <!-- coroutineScope -->
-            <tr>
-                <td class="method">coroutineScope { }</td>
-                <td><span class="dash">block result</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-            </tr>
-            <!-- supervisorScope -->
-            <tr>
-                <td class="method">supervisorScope { }</td>
-                <td><span class="dash">block result</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td class="root-cell">
-                    <span class="no">✗ No</span>
-                    <span class="root-note">CEH works<br> for children</span>
-                </td>
-                <td>
-                    <span class="yes">✓ Yes</span>
-                    <span class="root-note">SupervisorJob</span>
-                </td>
-                <td><span class="yes">✓ Yes</span></td>
-            </tr>
-            <!-- GlobalScope -->
-            <tr>
-                <td class="method">GlobalScope. ... { } <br>(e.g., GlobalScope.launch { })</td>
-                <td><span class="dash">Job/Deffered</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-            </tr>
-            <!-- launch() / async() -->
-            <tr>
-                <td class="method">launch() / async()</td>
-                <td><span class="dash">Job/Deffered</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-            </tr>
-            <!-- launch(Job()) / async(Job()) -->
-            <tr>
-                <td class="method">
-                    <div class="method-flex">
-                        <span>launch(Job()) / async(Job())</span>
-                        <span class="antipattern-line">⚠️ anti-pattern</span>
-                        <span class="antipattern-line" style="background:#fff0db;">breaks structured concurrency</span>
-                    </div>
-                </td>
-                <td><span class="dash">Job/Deffered</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td class="root-cell">
-                    <span class="yes">✓ Yes</span>
-                    <span class="root-note">passed Job() becomes root</span>
-                    <span class="root-note">CEH works for launch, <br> NOT for async</span>
-                </td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td><span class="yes">✓ Yes</span></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <hr>
-
-    <h2 style="font-size: 1rem; margin: 8px 0 6px 0;">🧩 Scope constructor</h2>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Expression</th>
-                <th>Returns</th>
-                <th>Blocks thread</th>
-                <th>Waits completion</th>
-                <th>Root Job</th>
-                <th>New Job</th>
-                <th>New coroutine</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="method">val my = CoroutineScope() <br>
-                | CoroutineScope(Job()) <br>
-                | CoroutineScope(SupervisorJob())</td>
-                <td><span class="dash">itself</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td><span class="no">✗ No</span></td>
-                <td class="root-cell">
-                    <span class="yes">✓ Yes</span>
-                    <span class="root-note">gets/creates root</span>
-                </td>
-                <td><span class="yes">✓ Yes</span></td>
-                <td><span class="no">✗ No</span></td>
-            </tr>
-        </tbody>
-    </table>
-    <div class="note-card">
-        <strong>CEH (CoroutineExceptionHandler)</strong> — механизм «последней надежды». 
-        Срабатывает только когда исключение достигло корневой корутины (Root Job) и не было обработано. 
-        Дочерние корутины делегируют исключения наверх — их CEH игнорируется.
-        Имеются исключения из этого правила, отмечены в таблице.
-    </div>
-        <div class="note-card">
-        <strong>SupervisorJob</strong> задает правило для дочерних корутин (дочки, внучки и т.д.): падение с исключением любой из них изолировано, оно не отменяет всех остальных в этой scope.
-    </div>
-    <div class="card-footer">
-        <div class="footer-name">Maria Karpikova / Pomazkina</div>
-        <div class="footer-links">
-            <a href="mailto:makarpikova@gmail.com">📧 makarpikova@gmail.com</a>
-            <a href="https://www.linkedin.com/in/maria-pomazkina-7972a2a3" target="_blank" rel="noopener">🔗 LinkedIn</a>
+    <div class="container">
+        <div class="hero">
+            <h1>Concurrency Hub</h1>
         </div>
+
+        <div class="cards">
+            <a href="Coroutines.html" class="card-link">
+                <div class="emoji-big">⚙️</div>
+                <h3>Kotlin Coroutines</h3>
+            </a>
+
+            <a href="Collections.html" class="card-link">
+                <div class="emoji-big">⚙️</div>
+                <h3>Java Concurrent Collections</h3>
+            </a>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-name">Maria Karpikova / Pomazkina</div>
+                <div class="footer-links">
+                    <a href="mailto:makarpikova@gmail.com">
+                        📧 makarpikova@gmail.com
+                    </a>
+                    <a href="https://www.linkedin.com/in/maria-pomazkina-7972a2a3" target="_blank" rel="noopener">
+                        🔗 LinkedIn
+                    </a>
+                </div>
+
+            </div>
+        </footer>
     </div>
-</div>
 </body>
 </html>
