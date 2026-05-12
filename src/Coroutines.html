@@ -387,13 +387,19 @@
         </tbody>
     </table>
     <div class="note-card">
-        <strong>CEH (CoroutineExceptionHandler)</strong> — механизм «последней надежды». 
-        Срабатывает только когда исключение достигло корневой корутины (Root Job) и не было обработано. 
-        Дочерние корутины делегируют исключения наверх — их CEH игнорируется.
-        Имеются исключения из этого правила, отмечены в таблице.
+        <strong>Coroutine</strong> is a code block that:
+        <ul style="margin-left: 20px;">
+            <li>is written within coroutine builder block</li>
+            <li>has exactly one associated Job object</li>
+            <li>belongs to a single coroutineScope</li>
+            <li>executes, suspends, cancels and handles exceptions according to structured concurrency rules.</li>
+        </ul>
+    </div>
+    <div class="note-card">
+        <strong>CEH (CoroutineExceptionHandler)</strong> —  is a last hope mechanism. CEH works only for root coroutine (Root Job), because unhandled exception of not-root coroutines spreads up the hierarcy in structured concurrency and CEH is ignored. Exceptions to this rule are marked in the table above.
     </div>
         <div class="note-card">
-        <strong>SupervisorJob</strong> задает правило для дочерних корутин (дочки, внучки и т.д.): падение с исключением любой из них изолировано, оно не отменяет всех остальных в этой scope.
+        <strong>SupervisorJob</strong> defines a rule for child coroutines: failure of any one of them is isolated – it does not cancel the others in the same scope (including the parent). So, its exception is only its problem, that's why CEH works for them.
     </div>
     <div class="card-footer">
         <div class="footer-name">Maria Karpikova / Pomazkina</div>
